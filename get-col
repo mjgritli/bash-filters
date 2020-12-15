@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+function usage() {
+  echo ""
+  echo "#get-col"
+  echo "This script helps you printa column with awk by passing column and seperator.
+  Author: Mohammed Griti <newton>
+
+<h2># Options</h2>
+-c specifies column number, 1 is default
+-s specifies the field separator, default is space/tab
+-o specifies the outout file, default is stdout
+-h print this help geecho
+
+Ex-usage: echo/cat file | get-col -c 1 -s ':'"
+  # exit();
+}
+
+#check if script is running by root sudo
+# if [ "$EUID" -ne 0 ]
+#   then echo "Please run as root"
+#   exit
+# fi
+col="1"
+sep=" "
+
+
+while  getopts c:s:h args ; do
+  case $args in
+    c)
+      col=$OPTARG
+      ;;
+    s)
+      sep=$OPTARG
+      ;;
+    h)
+      usage
+      exit
+      ;;
+    \? ) echo "Unknown option: -$OPTARG" >&2; exit 1;;
+    *)
+      echo "Invalid argument"
+      usage
+      ;;
+  esac
+done
+
+#shift.remove process paramaters, getonly stdin, remove getops
+shift $((OPTIND -1))
+
+# if [ $OPTIND -eq 1 ]; then
+#   echo "No options were passed";
+#   usage;
+#   exit
+# fi
+command="awk"
+
+if [[ $sep == "" ]]; then
+  echo "At least -s must be specified, field separator"
+  usage;
+  exit   
+fi
+
+if [[ $sep != "" && $sep != " " ]]; then
+  command+=" -F '$sep' "
+fi
+
+if [[ $col == "" ]]; then
+  echo "At least -c must be specified, col number"
+  usage;
+  exit   
+else
+  command+=" '{print $'\"$col\"'}' "
+fi
+
+if (( $#  > 0 )) ; then
+  # echo $command
+  # exit
+  echo "${command} ${@}" | bash | grep -v -e '^[[:space:]]*$' #remove empty lines after filter
+else
+  bash -c "$command" | grep -v -e '^[[:space:]]*$' #remove empty lines after filter
+fi
+exit

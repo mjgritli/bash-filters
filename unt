@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#this script will run sed command and quit at match phrase
+#to pass regex, add qoutes
+sed "/$1/q"

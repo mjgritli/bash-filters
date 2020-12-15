@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#this script will run grep command and execlude the match phrase
+#to pass regex, add qoutes
+
+params=$@
+match=$1
+
+#remove the first argument from params
+n=1   # This variable denotes the nth argument to be removed
+set -- "${@:1:n-1}" "${@:n+1}"
+
+if (( $#  > 1 )) ; then
+    cat $@ |  egrep -iv "$match"
+else
+    # echo $@
+    egrep -iv "$match"
+fi
+exit
